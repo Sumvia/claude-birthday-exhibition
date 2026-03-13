@@ -118,6 +118,7 @@ body {
 /* ── Viewer (top area) ── */
 #viewer {
   flex: 1;
+  min-height: 0;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -627,13 +628,15 @@ body {
 @media (max-width: 640px) {
   :root { --timeline-h: 100px; }
 
+  #h-timeline { flex-shrink: 0; min-height: var(--timeline-h); }
+
   .tl-node { padding: 0 10px; }
   .tl-node .node-label { font-size: 0.6rem; }
   .tl-group-header { font-size: 0.55rem; height: 22px; padding: 0 0.5rem; }
   .tl-node .node-dot { width: 9px; height: 9px; margin-bottom: 6px; }
   .kb-hint { display: none; }
 
-  #viewer { padding: 1rem 1rem; }
+  #viewer { padding: 1rem 1rem; min-height: 0; overflow-y: auto; }
   .viewer-inner { padding-top: 2.5rem; padding-bottom: 1rem; }
   .viewer-img, .viewer-video {
     max-height: calc(100vh - var(--timeline-h) - 180px);
