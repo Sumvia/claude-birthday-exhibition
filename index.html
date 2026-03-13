@@ -449,6 +449,7 @@ body {
 }
 
 #h-timeline.dragging { cursor: grabbing; }
+#h-timeline { touch-action: none; }
 
 .tl-scroll {
   display: flex;
@@ -562,14 +563,29 @@ body {
 
 /* ── Mobile ── */
 @media (max-width: 640px) {
-  :root { --timeline-h: 110px; }
+  :root { --timeline-h: 100px; }
 
   .tl-node { padding: 0 10px; }
   .tl-node .node-label { font-size: 0.6rem; }
-  .tl-group-header { font-size: 0.6rem; height: 26px; }
+  .tl-group-header { font-size: 0.55rem; height: 22px; padding: 0 0.5rem; }
+  .tl-node .node-dot { width: 9px; height: 9px; margin-bottom: 6px; }
   .kb-hint { display: none; }
 
-  #viewer { padding: 1.5rem 1rem; }
+  #viewer { padding: 1rem 1rem; }
+  .viewer-inner { padding-top: 2.5rem; padding-bottom: 1rem; }
+  .viewer-img, .viewer-video {
+    max-height: calc(100vh - var(--timeline-h) - 180px);
+  }
+
+  .top-bar { padding: 0.6rem 0.8rem; }
+  .top-bar button { font-size: 0.7rem; padding: 0.3em 0.8em; }
+}
+
+@media (max-width: 400px) {
+  :root { --timeline-h: 90px; }
+  .tl-group-header { font-size: 0.5rem; height: 20px; }
+  .tl-node { padding: 0 8px; }
+  .tl-node .node-label { font-size: 0.55rem; }
 }
 </style>
 </head>
