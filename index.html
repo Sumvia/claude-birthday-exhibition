@@ -166,6 +166,36 @@ body {
   margin-bottom: 1.5rem;
 }
 
+.viewer-media-wrap .loading-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  z-index: 1;
+  transition: opacity 0.3s;
+}
+
+.viewer-media-wrap .loading-spinner.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent-dim);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .viewer-media-wrap .reload-btn {
   position: absolute;
   top: 8px;
@@ -912,9 +942,9 @@ function renderViewer() {
 
   let mediaHtml;
   if (isVideo(item.image)) {
-    mediaHtml = `<div class="viewer-media-wrap"><button class="reload-btn" onclick="reloadMedia(this)" title="重新加载">↻</button><video class="viewer-video" src="${item.image}" controls autoplay loop muted></video></div>`;
+    mediaHtml = `<div class="viewer-media-wrap"><div class="loading-spinner"><div class="spinner"></div></div><button class="reload-btn" onclick="reloadMedia(this)" title="重新加载">↻</button><video class="viewer-video" src="${item.image}" controls autoplay loop muted onloadeddata="this.parentElement.querySelector('.loading-spinner').classList.add('hidden')"></video></div>`;
   } else if (item.image) {
-    mediaHtml = `<div class="viewer-media-wrap"><button class="reload-btn" onclick="reloadMedia(this)" title="重新加载">↻</button><img class="viewer-img" src="${item.image}" alt="${title}" onerror="this.outerHTML='<div class=viewer-placeholder>图片加载中</div>'"></div>`;
+    mediaHtml = `<div class="viewer-media-wrap"><div class="loading-spinner"><div class="spinner"></div></div><button class="reload-btn" onclick="reloadMedia(this)" title="重新加载">↻</button><img class="viewer-img" src="${item.image}" alt="${title}" onload="this.parentElement.querySelector('.loading-spinner').classList.add('hidden')" onerror="this.parentElement.querySelector('.loading-spinner').classList.add('hidden');this.outerHTML='<div class=viewer-placeholder>图片加载失败</div>'"></div>`;
   } else {
     mediaHtml = `<div class="viewer-placeholder">待上传</div>`;
   }
@@ -981,6 +1011,8 @@ function gallerySelect(index) {
 
 function reloadMedia(btn) {
   const wrap = btn.parentElement;
+  const spinner = wrap.querySelector('.loading-spinner');
+  if (spinner) spinner.classList.remove('hidden');
   const img = wrap.querySelector('img');
   const video = wrap.querySelector('video');
   if (img) {
