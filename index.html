@@ -630,17 +630,34 @@ body {
 @media (max-width: 1024px) {
   :root { --timeline-h: 100px; }
 
-  #h-timeline {
+  #exhibition {
+    display: none;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: var(--timeline-h);
+    top: 0; left: 0; right: 0; bottom: 0;
+    flex-direction: column;
+  }
+  #exhibition.active { display: flex; }
+
+  #h-timeline {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    height: var(--timeline-h) !important;
     z-index: 100;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
   }
 
   #viewer {
-    padding-bottom: calc(var(--timeline-h) + 0.5rem);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: var(--timeline-h);
+    overflow-y: auto;
+    padding-bottom: 1rem;
   }
 }
 
