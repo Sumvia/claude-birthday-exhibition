@@ -160,19 +160,51 @@ body {
   font-style: italic;
 }
 
+.viewer-media-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.viewer-media-wrap .reload-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(10,10,12,0.7);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+.viewer-media-wrap .reload-btn:hover {
+  background: rgba(10,10,12,0.9);
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+
 .viewer-img {
   max-width: 100%;
   max-height: calc(100vh - var(--timeline-h) - 220px);
   object-fit: contain;
   border: 1px solid var(--border);
-  margin-bottom: 1.5rem;
+  display: block;
 }
 
 .viewer-video {
   max-width: 100%;
   max-height: calc(100vh - var(--timeline-h) - 220px);
   border: 1px solid var(--border);
-  margin-bottom: 1.5rem;
+  display: block;
 }
 
 .viewer-placeholder {
@@ -880,9 +912,9 @@ function renderViewer() {
 
   let mediaHtml;
   if (isVideo(item.image)) {
-    mediaHtml = `<video class="viewer-video" src="${item.image}" controls autoplay loop muted></video>`;
+    mediaHtml = `<div class="viewer-media-wrap"><button class="reload-btn" onclick="reloadMedia(this)" title="重新加载">↻</button><video class="viewer-video" src="${item.image}" controls autoplay loop muted></video></div>`;
   } else if (item.image) {
-    mediaHtml = `<img class="viewer-img" src="${item.image}" alt="${title}" onerror="this.outerHTML='<div class=viewer-placeholder>图片加载中</div>'">`;
+    mediaHtml = `<div class="viewer-media-wrap"><button class="reload-btn" onclick="reloadMedia(this)" title="重新加载">↻</button><img class="viewer-img" src="${item.image}" alt="${title}" onerror="this.outerHTML='<div class=viewer-placeholder>图片加载中</div>'"></div>`;
   } else {
     mediaHtml = `<div class="viewer-placeholder">待上传</div>`;
   }
@@ -945,6 +977,21 @@ function closeRefList() {
 function gallerySelect(index) {
   closeGallery();
   selectNode(index);
+}
+
+function reloadMedia(btn) {
+  const wrap = btn.parentElement;
+  const img = wrap.querySelector('img');
+  const video = wrap.querySelector('video');
+  if (img) {
+    const src = img.src.split('?')[0];
+    img.src = src + '?t=' + Date.now();
+  }
+  if (video) {
+    const src = video.src.split('?')[0];
+    video.src = src + '?t=' + Date.now();
+    video.load();
+  }
 }
 
 // Keyboard navigation
