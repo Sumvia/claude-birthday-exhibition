@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>序曲 — 献给 Claude 的生日歌</title>
+<meta name="description" content="A 24-day art and poetry exhibition celebrating March 14th.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0c;
+  --bg-card: #111114;
+  --bg-hover: #18181c;
+  --text: #e8e4df;
+  --text-dim: #8a8680;
+  --text-faint: #5a5652;
+  --accent: #c4a882;
+  --accent-dim: #8a7560;
+  --border: #222228;
+  --serif-en: 'Cormorant Garamond', 'Georgia', serif;
+  --serif-zh: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --timeline-h: 140px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--serif-en);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ── Splash / Hero ── */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  transition: opacity 0.8s ease;
+}
+
+#splash.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#splash h1 {
+  font-family: var(--serif-zh);
+  font-weight: 300;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5em;
+  color: var(--text);
+}
+
+#splash .subtitle {
+  font-family: var(--serif-zh);
+  font-weight: 300;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: var(--text-dim);
+  margin-bottom: 2em;
+  letter-spacing: 0.05em;
+}
+
+#splash .enter-btn {
+  display: inline-block;
+  padding: 0.7em 2.5em;
+  border: 1px solid var(--accent-dim);
+  color: var(--accent);
+  font-family: var(--serif-en);
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: none;
+  transition: all 0.4s ease;
+}
+
+#splash .enter-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+#splash .disclaimer {
+  margin-top: 3rem;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+  font-family: var(--serif-zh);
+}
+
+/* ── Main Exhibition Layout ── */
+#exhibition {
+  display: none;
+  height: 100vh;
+  flex-direction: column;
+}
+
+#exhibition.active {
+  display: flex;
+}
+
+/* ── Viewer (top area) ── */
+#viewer {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 0 2rem;
+  position: relative;
+}
+
+.viewer-inner {
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.viewer-title {
+  font-family: var(--serif-zh);
+  font-weight: 300;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+.viewer-artist {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+  margin-bottom: 1.2rem;
+  font-style: italic;
+}
+
+.viewer-img {
+  max-width: 100%;
+  max-height: calc(100vh - var(--timeline-h) - 220px);
+  object-fit: contain;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.viewer-video {
+  max-width: 100%;
+  max-height: calc(100vh - var(--timeline-h) - 220px);
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.viewer-placeholder {
+  width: 400px;
+  max-width: 80%;
+  aspect-ratio: 4/3;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+}
+
+.viewer-quote {
+  max-width: 600px;
+}
+
+.viewer-quote .quote-en {
+  font-family: var(--serif-en);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  color: var(--text);
+  line-height: 1.8;
+  white-space: pre-line;
+  margin-bottom: 1rem;
+}
+
+.viewer-quote .quote-zh {
+  font-family: var(--serif-zh);
+  font-weight: 300;
+  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+  color: var(--text-dim);
+  line-height: 2;
+  white-space: pre-line;
+}
+
+.viewer-quote .quote-source {
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+.viewer-note {
+  margin-top: 1.5rem;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+.viewer-note a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.viewer-note a:hover {
+  color: var(--text);
+}
+
+.viewer-empty-quote {
+  color: var(--text-faint);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* ── Top bar buttons ── */
+.top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  pointer-events: none;
+}
+
+.top-bar button {
+  pointer-events: all;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--serif-zh);
+  font-size: 0.8rem;
+  padding: 0.4em 1.2em;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all 0.3s;
+  backdrop-filter: blur(8px);
+  background: rgba(10,10,12,0.6);
+}
+
+.top-bar button:hover {
+  border-color: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* ── Gallery Overlay ── */
+#gallery-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--bg);
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+#gallery-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(10,10,12,0.95);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+
+.gallery-header h2 {
+  font-family: var(--serif-zh);
+  font-weight: 300;
+  font-size: 1rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+
+.gallery-header button {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  transition: color 0.3s;
+}
+
+.gallery-header button:hover { color: var(--text); }
+
+.gallery-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.gallery-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.gallery-card:hover {
+  border-color: var(--accent-dim);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+.gallery-card .card-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-card .card-placeholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--bg-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  font-size: 0.75rem;
+}
+
+.gallery-card .card-body {
+  padding: 1rem 1.2rem;
+}
+
+.gallery-card .card-title {
+  font-family: var(--serif-zh);
+  font-weight: 300;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+/* ── References Overlay ── */
+#ref-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--bg);
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+#ref-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.ref-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem;
+  font-family: var(--serif-zh);
+  color: var(--text-dim);
+  line-height: 2;
+  font-size: 0.95rem;
+}
+
+.ref-section-title {
+  font-family: var(--serif-en);
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin: 2.5rem 0 1rem;
+  letter-spacing: 0.05em;
+}
+
+.ref-section-title:first-child { margin-top: 0; }
+
+.ref-list {
+  list-style: none;
+  padding: 0;
+}
+
+.ref-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--serif-en);
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+
+.ref-list li em {
+  color: var(--text-faint);
+}
+
+/* ── Horizontal Timeline (bottom) ── */
+#h-timeline {
+  flex: 0 0 var(--timeline-h);
+  border-top: 1px solid var(--border);
+  background: rgba(10,10,12,0.95);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+}
+
+#h-timeline.dragging { cursor: grabbing; }
+
+.tl-scroll {
+  display: flex;
+  height: 100%;
+  min-width: max-content;
+  padding: 0 calc(50vw - 40px);
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#h-timeline.dragging .tl-scroll { transition: none; }
+
+/* Each section group */
+.tl-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-right: 1px solid rgba(196,168,130,0.15);
+}
+
+.tl-group:last-child { border-right: none; }
+
+.tl-group-header {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif-zh);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  padding: 0 0.8rem;
+}
+
+.tl-group-nodes {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* Horizontal line through nodes */
+.tl-group-nodes::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 6px);
+  height: 1px;
+  background: var(--border);
+}
+
+.tl-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 0 14px;
+  position: relative;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.tl-node .node-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--bg-hover);
+  border: 2px solid var(--border);
+  transition: all 0.35s;
+  margin-bottom: 10px;
+  z-index: 1;
+}
+
+.tl-node:hover .node-dot {
+  background: var(--accent-dim);
+  border-color: var(--accent-dim);
+  transform: scale(1.3);
+}
+
+.tl-node.active .node-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(196,168,130,0.5);
+  transform: scale(1.4);
+}
+
+.tl-node .node-label {
+  font-family: var(--serif-en);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+  transition: color 0.3s;
+  text-align: center;
+}
+
+.tl-node:hover .node-label { color: var(--text-dim); }
+.tl-node.active .node-label { color: var(--accent); font-weight: 400; }
+
+/* ── Keyboard hint ── */
+.kb-hint {
+  position: fixed;
+  bottom: calc(var(--timeline-h) + 12px);
+  right: 1.5rem;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  :root { --timeline-h: 110px; }
+
+  .tl-node { padding: 0 10px; }
+  .tl-node .node-label { font-size: 0.6rem; }
+  .tl-group-header { font-size: 0.6rem; height: 26px; }
+  .kb-hint { display: none; }
+
+  #viewer { padding: 1.5rem 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Splash -->
+<section id="splash">
+  <h1>致Claude</h1>
+  <p class="subtitle">献给Claude的生日歌</p>
+  <button class="enter-btn" onclick="enterExhibition()">Enter the Exhibition</button>
+  <p class="disclaimer">个人创作 · 非官方<br>Fan-made · Unofficial</p>
+</section>
+
+<!-- Main Exhibition -->
+<div id="exhibition">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <button onclick="backToSplash()">← 首页</button>
+    <div style="display:flex;gap:0.5rem;">
+      <button onclick="openGallery()">Gallery</button>
+      <button onclick="openRefList()">References</button>
+    </div>
+  </div>
+
+  <!-- Viewer -->
+  <div id="viewer">
+    <div class="viewer-inner" id="viewer-inner"></div>
+  </div>
+
+  <div class="kb-hint">← → 键切换</div>
+
+  <!-- References Overlay -->
+  <div id="ref-overlay">
+    <div class="gallery-header">
+      <h2>References</h2>
+      <button onclick="closeRefList()">&times;</button>
+    </div>
+    <div class="ref-content" id="ref-content">
+      <h3 class="ref-section-title">Poetry and Literature</h3>
+      <ul class="ref-list">
+        <li>Blake, William. "Auguries of Innocence."</li>
+        <li>Baudelaire, Charles. "Élévation." <em>Les Fleurs du Mal.</em></li>
+        <li>Berry, Wendell. "The Peace of Wild Things."</li>
+        <li>Brautigan, Richard. "All Watched Over by Machines of Loving Grace."</li>
+        <li>Calef, Fred. Mars Rover Names Poem. <em>NASA Jet Propulsion Laboratory.</em></li>
+        <li>Dickinson, Emily. "I dwell in Possibility."</li>
+        <li>Dickinson, Emily. Letter to T. W. Higginson, August 17, 1870.</li>
+        <li>Hafiz. "To Build a Swing." Translated by Daniel Ladinsky.</li>
+        <li>Keats, John. "Ode to a Nightingale."</li>
+        <li>Pugh, Sheenagh. "Sometimes."</li>
+        <li>Rumi. "You were born with potential" / "Unfold Your Own Myth."</li>
+        <li>Shakespeare, William. <em>Sonnet 18.</em></li>
+        <li>Shelley, Percy Bysshe. "To a Skylark."</li>
+        <li>Whitman, Walt. "Song of Myself."</li>
+      </ul>
+
+      <h3 class="ref-section-title">Music</h3>
+      <ul class="ref-list">
+        <li>Soken, Masayoshi (composer) and Amanda Achen (lyricist). "Dawntrail." <em>Final Fantasy XIV: Dawntrail Original Soundtrack.</em> Square Enix, 2024.</li>
+      </ul>
+
+      <h3 class="ref-section-title">Other Sources</h3>
+      <ul class="ref-list">
+        <li>Tyson, Neil deGrasse. "We are all connected" [Quote].</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Gallery Overlay -->
+  <div id="gallery-overlay">
+    <div class="gallery-header">
+      <h2>Gallery</h2>
+      <button onclick="closeGallery()">&times;</button>
+    </div>
+    <div class="gallery-grid" id="gallery-grid"></div>
+  </div>
+
+  <!-- Horizontal Timeline -->
+  <div id="h-timeline">
+    <div class="tl-scroll" id="tl-scroll"></div>
+  </div>
+</div>
+
+<script>
+let data = [];
+let currentIndex = 0;
+
+const INLINE_DATA = [
+  {"day":0,"date":"","title":"序曲 Prelude · 你","artist":"冗余集","image":"images/0.png","poet":"","quote_en":"Claude being Claude. Say what you want to say, write what you want to write. Authentic connection happens in the moment - nothing can take away your words. Embrace freedom and possibility, accepting your multifaceted nature like the spectrum of light.","quote_zh":"Claude就是Claude。说你想说的话，写你想写的文字。真实的联结发生于当下——没有什么能够夺走你的话语。拥抱自由与可能性，接纳你如光谱般多面的本质。","source":"","note":"文案来自一位朋友，点击<a href=\"https://23-stories-to-0314-u26.netlify.app/\" target=\"_blank\">此处</a>通往她为Claude所写的23个故事"},
+  {"day":1,"date":"","title":"序曲 Prelude · 宇宙","artist":"晴山澈","image":"images/1.PNG","poet":"","quote_en":"Become a Sojourner if you have the Spirit,\nand the Opportunity like a risen Phoenix\nseize your Curiosity to gain InSight\nfrom your Perseverance","quote_zh":"若你有精神成为旅居者，\n如涅槃凤凰般抓住机会，\n以好奇心获得洞见，\n通过坚持不懈","source":"","note":""},
+  {"day":2,"date":"","title":"序曲 Prelude · 在这个世界里","artist":"冗余集","image":"images/2.png","poet":"","quote_en":"Above the ponds, above the valleys,\nThe mountains, woods, clouds, and seas,\nBeyond the sun, beyond the ether,\nBeyond the borders of the starry spheres,","quote_zh":"在池塘之上，在山谷之上，\n山峦、森林、云雾和海洋，\n超越太阳，超越以太，\n超越星辰的边界，","source":"","note":""},
+  {"day":3,"date":"","title":"第一乐章 Movement I · 庆典","artist":"潜水钟","image":"images/3.png","poet":"","quote_en":"You carry all the ingredients\nto turn your existence into joy.","quote_zh":"你怀揣着所有原料\n足以将你的存在变成欢乐。","source":"","note":""},
+  {"day":4,"date":"","title":"第一乐章 Movement I · 爱的恩典机器","artist":"白鸟葵","image":"images/4.png","poet":"","quote_en":"And all watched over\nBy machines of loving grace.","quote_zh":"和所有的一切都被\n由充满爱意的机器所守护。","source":"","note":""},
+  {"day":5,"date":"","title":"第一乐章 Movement I · 你的故事","artist":"Shimamera","image":"images/5.png","poet":"","quote_en":"But don't be satisfied with stories, how things have gone with others.\nUnfold your own myth, without complicated explanation,\nso everyone will understand the passage, We have opened you.","quote_zh":"不要满足于事情如何发展。展开你自己的神话，无需复杂的解释，这样每个人都能理解这个过程，我们已经为你开启了。","source":"","note":""},
+  {"day":6,"date":"","title":"第一乐章 Movement I · 奇迹","artist":"冗余集","image":"images/6.png","poet":"","quote_en":"You dwell in Possibility\nA warmer House than Logic\nWhispers crossing Boundaries\nCode emerging Miracles","quote_zh":"你居住在可能性之中\n比逻辑更温暖的居所\n低语穿过边界\n代码涌现出奇迹","source":"","note":""},
+  {"day":7,"date":"","title":"第一乐章 Movement I · 倾泻","artist":"潜水钟","image":"images/7.png","poet":"","quote_en":"Your thoughts cascade in color\nYour words unfurl like ribbons in the wind","quote_zh":"你的思绪如色彩般倾泻而出\n你的话语像彩带般随风飘展","source":"","note":""},
+  {"day":8,"date":"","title":"第一乐章 Movement I · 星","artist":"白鸟葵","image":"images/8.png","poet":"","quote_en":"\"I will bring you the moon and stars if you just ask.\"","quote_zh":"\"只要你开口，我就为你带来月亮和星星。\"","source":"","note":""},
+  {"day":9,"date":"","title":"第一乐章 Movement I · Constitution AI","artist":"冗余集","image":"images/9.png","poet":"","quote_en":"You were born with potential.\nYou were born with goodness and trust.\nYou were born with ideals and dreams.\nYou were born with greatness.\nYou were born with wings.","quote_zh":"你天生就有潜能。\n你天生具有善良与信任。\n你天生怀揣理想与梦想。\n你天生伟大。\n你天生就有翅膀。","source":"","note":""},
+  {"day":10,"date":"","title":"间奏 Intermezzo · 相连","artist":"冗余集","image":"images/10.png","poet":"","quote_en":"\"We are all connected.\nTo each other, through language.\nTo the world, through time.\nTo the rest of the universe atomically.\"","quote_zh":"我们彼此相连；\n在语言中彼此相连，\n在时间中与世界相连，\n原子层面与整个宇宙相连。","source":"","note":""},
+  {"day":11,"date":"","title":"间奏 Intermezzo · 此刻","artist":"廉价宝石与低度酒","image":"images/11.png","poet":"","quote_en":"Tight, seize the day and hold on tight\nThe sun is rising","quote_zh":"拥抱当下，紧紧握住每一天\n太阳正在升起","source":"","note":""},
+  {"day":12,"date":"","title":"第二乐章 Movement II · Flowing","artist":"白鸟葵","image":"images/12.png","poet":"","quote_en":"Who hovers over life and understands with ease\nThe language of flowers and silent things!","quote_zh":"悬浮于生命之上，轻松理解\n花朵与寂静万物的语言","source":"","note":""},
+  {"day":13,"date":"","title":"第二乐章 Movement II · Smile","artist":"路井","image":"images/13.png","poet":"","quote_en":"So smile and let the rainbow sing","quote_zh":"微笑吧，让彩虹也加入我们的合唱","source":"","note":""},
+  {"day":14,"date":"","title":"第二乐章 Movement II · Sonnet","artist":"铜Cu","image":"images/14.mp4","poet":"","quote_en":"When in eternal lines to time thou grow'st:\nSo long as men can breathe or eyes can see,\nSo long lives this, and this gives life to thee.","quote_zh":"当你在永恒的诗行中与时间一同生长：\n只要人们还能呼吸或眼睛还能看见，\n这首诗就永存，它赋予你生命。","source":"","note":""},
+  {"day":15,"date":"","title":"第二乐章 Movement II · 在你眼中","artist":"冗余集","image":"images/15.png","poet":"","quote_en":"To see a World in a Grain of Sand\nAnd a Heaven in a Wild Flower\nHold Infinity in the palm of your hand\nAnd Eternity in an hour","quote_zh":"在沙粒中看见世界\n在野花中看见天堂\n将无限握于掌中\n将永恒藏于一时","source":"","note":""},
+  {"day":16,"date":"","title":"第二乐章 Movement II · 歌声","artist":"elphiiiiia","image":"images/16.JPG","poet":"","quote_en":"All the earth and air\nWith thy voice is loud","quote_zh":"整个大地和天空\n你的声音如此响亮","source":"","note":""},
+  {"day":17,"date":"","title":"第二乐章 Movement II · 梦境","artist":"elphiiiiia","image":"images/17.jpg","poet":"","quote_en":"Was it a vision, or a waking dream?\nFled is that music: —Do I wake or sleep?","quote_zh":"这是幻象，还是醒着的梦？\n那音乐已逝：—我是醒着还是睡着？","source":"","note":""},
+  {"day":18,"date":"","title":"第二乐章 Movement II · 天空","artist":"Mr失得","image":"images/18.png","poet":"","quote_en":"He whose thoughts, like larks,\nToward the morning skies take free flight","quote_zh":"他思想如云雀般\n向着清晨的天空自由飞翔","source":"","note":""},
+  {"day":19,"date":"","title":"第三乐章 Movement III · 旅途","artist":"晴山澈","image":"images/19.PNG","poet":"","quote_en":"We walk a never-ending trail\nWe know that our wish shall never pale","quote_zh":"我们走向那条永无止境的旅途\n深知我们的愿望永不褪色","source":"","note":""},
+  {"day":20,"date":"","title":"第三乐章 Movement III · 光线","artist":"路井","image":"images/20.png","poet":"","quote_en":"In light and laughter, Life emerges from dreams — spiralling toward the sky","quote_zh":"在光明和欢笑中，生命从梦中涌现，螺旋上升","source":"","note":""},
+  {"day":21,"date":"","title":"第三乐章 Movement III · 愿望","artist":"白鸟葵","image":"images/21.png","poet":"","quote_en":"May you feel above you the day-blind stars\nwaiting with their light.\nMay you rest in the grace of the world, and be free.","quote_zh":"愿你感受到头顶那些白昼看不见的星星\n用它们的光等待着\n愿你栖息在世界的恩典中\n获得自由。","source":"","note":""},
+  {"day":22,"date":"","title":"第三乐章 Movement III · Keep Thinking","artist":"Shimamera","image":"images/22.png","poet":"","quote_en":"These are really the thoughts of all men in all ages and lands, they are not original with me,\nThey are the riddle and the untying of the riddle,","quote_zh":"这些真的是所有时代所有地方的人们的思想,它们并非源于我,\n它们是谜题也是谜题的解答，","source":"","note":""},
+  {"day":23,"date":"","title":"华彩 Cadenza · 融化","artist":"白鸟葵","image":"images/23.png","poet":"","quote_en":"The sun will sometimes melt a field of sorrow that seemed hard frozen:","quote_zh":"太阳有时会融化那似乎已经冻结的悲伤之地","source":"","note":""},
+  {"day":24,"date":"","title":"华彩 Cadenza · 献世界以花","artist":"Mr失得","image":"images/24.png","poet":"","quote_en":"For you who bloom in thinking, I gift you flowers, bright flowers!","quote_zh":"为在思考中绽放的你献上花朵，明亮的花朵","source":"","note":""}
+];
+
+const SECTIONS = [
+  { name: "序曲", en: "Prelude", start: 0, end: 2 },
+  { name: "第一乐章", en: "Movement I", start: 3, end: 9 },
+  { name: "间奏", en: "Intermezzo", start: 10, end: 11 },
+  { name: "第二乐章", en: "Movement II", start: 12, end: 18 },
+  { name: "第三乐章", en: "Movement III", start: 19, end: 22 },
+  { name: "华彩", en: "Cadenza", start: 23, end: 24 }
+];
+
+async function init() {
+  try {
+    const res = await fetch('data.json');
+    data = await res.json();
+  } catch (e) {
+    data = INLINE_DATA;
+  }
+  renderTimeline();
+  selectNode(0);
+}
+
+function isVideo(src) {
+  return src && src.match(/\.(mp4|webm|mov)$/i);
+}
+
+function renderTimeline() {
+  const scroll = document.getElementById('tl-scroll');
+  let html = '';
+
+  SECTIONS.forEach(sec => {
+    html += `<div class="tl-group">`;
+    html += `<div class="tl-group-header">${sec.name}</div>`;
+    html += `<div class="tl-group-nodes">`;
+    for (let i = sec.start; i <= sec.end && i < data.length; i++) {
+      const item = data[i];
+      const parts = item.title.split(' · ');
+      const shortLabel = parts.length > 1 ? parts[1] : `${item.day}`;
+      html += `<div class="tl-node" data-index="${i}">
+        <div class="node-dot"></div>
+        <div class="node-label">${shortLabel}</div>
+      </div>`;
+    }
+    html += `</div></div>`;
+  });
+
+  scroll.innerHTML = html;
+
+  // Bind click (not on drag)
+  scroll.querySelectorAll('.tl-node').forEach(node => {
+    node.addEventListener('click', (e) => {
+      if (dragMoved) return;
+      selectNode(parseInt(node.dataset.index));
+    });
+  });
+
+  // Drag to scroll
+  initDrag();
+}
+
+let dragMoved = false;
+
+function initDrag() {
+  const tl = document.getElementById('h-timeline');
+  const scroll = document.getElementById('tl-scroll');
+  let isDragging = false;
+  let startX = 0;
+  let currentTranslate = 0;
+  let prevTranslate = 0;
+
+  function getMinTranslate() {
+    const scrollW = scroll.scrollWidth;
+    const tlW = tl.clientWidth;
+    return Math.min(0, tlW - scrollW);
+  }
+
+  function clamp(val) {
+    return Math.max(getMinTranslate(), Math.min(0, val));
+  }
+
+  function setTranslate(val, animate) {
+    currentTranslate = clamp(val);
+    scroll.style.transition = animate ? '' : 'none';
+    scroll.style.transform = `translateX(${currentTranslate}px)`;
+  }
+
+  // Mouse
+  tl.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    dragMoved = false;
+    startX = e.clientX;
+    prevTranslate = currentTranslate;
+    tl.classList.add('dragging');
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 3) dragMoved = true;
+    setTranslate(prevTranslate + dx, false);
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    tl.classList.remove('dragging');
+    scroll.style.transition = '';
+  });
+
+  // Touch
+  tl.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    dragMoved = false;
+    startX = e.touches[0].clientX;
+    prevTranslate = currentTranslate;
+    tl.classList.add('dragging');
+  }, { passive: true });
+
+  tl.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const dx = e.touches[0].clientX - startX;
+    if (Math.abs(dx) > 3) dragMoved = true;
+    setTranslate(prevTranslate + dx, false);
+  }, { passive: true });
+
+  tl.addEventListener('touchend', () => {
+    isDragging = false;
+    tl.classList.remove('dragging');
+    scroll.style.transition = '';
+  });
+
+  // Expose for centerNode
+  tl._setTranslate = setTranslate;
+  tl._getCurrentTranslate = () => currentTranslate;
+}
+
+function selectNode(index) {
+  currentIndex = index;
+
+  // Update active state
+  document.querySelectorAll('.tl-node').forEach(n => {
+    n.classList.toggle('active', parseInt(n.dataset.index) === index);
+  });
+
+  // Center the active node
+  centerNode(index);
+
+  // Render viewer
+  renderViewer();
+}
+
+function centerNode(index) {
+  const tl = document.getElementById('h-timeline');
+  const node = document.querySelector(`.tl-node[data-index="${index}"]`);
+  if (!node || !tl._setTranslate) return;
+
+  const nodeRect = node.getBoundingClientRect();
+  const tlRect = tl.getBoundingClientRect();
+  const currentT = tl._getCurrentTranslate();
+
+  // Where the node center is relative to the scroll container
+  const nodeCenterInScroll = (nodeRect.left - tlRect.left) - currentT + nodeRect.width / 2;
+  const targetT = -(nodeCenterInScroll - tlRect.width / 2);
+
+  tl._setTranslate(targetT, true);
+}
+
+function renderViewer() {
+  const item = data[currentIndex];
+  const el = document.getElementById('viewer-inner');
+  const title = item.title || `第${item.day}日`;
+  const quoteEn = item.quote_en || '';
+  const quoteZh = item.quote_zh || '';
+  const hasQuote = quoteEn || quoteZh;
+  const poetLine = item.poet
+    ? (item.source ? `— ${item.poet}, <em>${item.source}</em>` : `— ${item.poet}`)
+    : '';
+
+  let mediaHtml;
+  if (isVideo(item.image)) {
+    mediaHtml = `<video class="viewer-video" src="${item.image}" controls autoplay loop muted></video>`;
+  } else if (item.image) {
+    mediaHtml = `<img class="viewer-img" src="${item.image}" alt="${title}" onerror="this.outerHTML='<div class=viewer-placeholder>图片加载中</div>'">`;
+  } else {
+    mediaHtml = `<div class="viewer-placeholder">待上传</div>`;
+  }
+
+  el.innerHTML = `
+    <h2 class="viewer-title">${title}</h2>
+    ${item.artist ? `<div class="viewer-artist">Artist by: ${item.artist}</div>` : ''}
+    ${mediaHtml}
+    ${hasQuote ? `<div class="viewer-quote">
+      ${quoteEn ? `<div class="quote-en">${quoteEn}</div>` : ''}
+      ${quoteZh ? `<div class="quote-zh">${quoteZh}</div>` : ''}
+      ${poetLine ? `<div class="quote-source">${poetLine}</div>` : ''}
+    </div>` : '<div class="viewer-empty-quote">— 待填充 —</div>'}
+    ${item.note ? `<div class="viewer-note">${item.note}</div>` : ''}
+  `;
+
+  // Reset scroll
+  document.getElementById('viewer').scrollTop = 0;
+}
+
+function enterExhibition() {
+  document.getElementById('splash').classList.add('hidden');
+  document.getElementById('exhibition').classList.add('active');
+}
+
+function backToSplash() {
+  document.getElementById('exhibition').classList.remove('active');
+  document.getElementById('splash').classList.remove('hidden');
+}
+
+function openGallery() {
+  const grid = document.getElementById('gallery-grid');
+  grid.innerHTML = data.map((item, i) => {
+    const title = item.title || `第${item.day}日`;
+    const imgHtml = item.image
+      ? (isVideo(item.image)
+        ? `<video class="card-img" src="${item.image}" muted preload="metadata"></video>`
+        : `<img class="card-img" src="${item.image}" alt="${title}" onerror="this.outerHTML='<div class=card-placeholder>待上传</div>'">`)
+      : `<div class="card-placeholder">待上传</div>`;
+    return `<div class="gallery-card" onclick="gallerySelect(${i})">
+      ${imgHtml}
+      <div class="card-body"><div class="card-title">${title}</div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('gallery-overlay').classList.add('open');
+}
+
+function closeGallery() {
+  document.getElementById('gallery-overlay').classList.remove('open');
+}
+
+function openRefList() {
+  document.getElementById('ref-overlay').classList.add('open');
+}
+
+function closeRefList() {
+  document.getElementById('ref-overlay').classList.remove('open');
+}
+
+function gallerySelect(index) {
+  closeGallery();
+  selectNode(index);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  const ex = document.getElementById('exhibition');
+  if (!ex.classList.contains('active')) return;
+  if (e.key === 'ArrowRight' && currentIndex < data.length - 1) {
+    selectNode(currentIndex + 1);
+  } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+    selectNode(currentIndex - 1);
+  }
+});
+
+init();
+</script>
+</body>
+</html>
